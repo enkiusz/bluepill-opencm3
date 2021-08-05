@@ -134,6 +134,10 @@ GENERATED_BINARIES=$(BINARY).elf $(BINARY).bin $(BINARY).hex $(BINARY).srec $(BI
     } \
 	{printf("%10s %8s\n", $$1, human($$2))} \
 '
+serial:
+	echo '#define USB_SERIALNO "' | tr -d "\r\n" > serial_number.h
+	uuidgen | tr -d "\r\n" >> serial_number.h
+	echo '"' >> serial_number.h
 
 %.flash: %.elf
 	$(GDB) --batch \
@@ -147,5 +151,5 @@ clean:
 program:
 	$(shell which python) $(LOADER_SCRIPT) -p $(USB_SERIAL) -e -w -v $(BINARY).bin 
 
-.PHONY: images clean stylecheck styleclean elf bin hex srec list
+.PHONY: images serial clean stylecheck styleclean elf bin hex srec list
 -include $(OBJS:.o=.d)
